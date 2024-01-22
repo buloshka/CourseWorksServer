@@ -9,10 +9,7 @@ class Users(AbstractBaseUser):
     email = models.EmailField(unique=True)
     phonenumber = models.CharField(unique=True, max_length=13)
     registration_date = models.DateTimeField()
-    avatar = models.ImageField(upload_to='users/avatars', default='users/avatars/None.jpeg')
-
-    is_active = models.BooleanField(default=True)
-    is_staff = models.BooleanField(default=False)
+    avatar = models.ImageField(upload_to='static/users/avatars', default='static/users/avatars/None.png', null=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['name', 'surname', 'phonenumber']
@@ -21,7 +18,7 @@ class Users(AbstractBaseUser):
         app_label = 'config'
         db_table = 'users'
 
-
+'''
 class Chattypes(models.Model):
     name = models.CharField(max_length=100)
     description = models.CharField()
@@ -30,7 +27,7 @@ class Chattypes(models.Model):
         app_label = 'config'
         db_table = 'chattypes'
 
-'''
+
 class Chats(models.Model):
     type_id = models.ForeignKey(Chattypes, models.DO_NOTHING)
     name = models.CharField(max_length=50)
