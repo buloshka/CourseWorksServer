@@ -2,16 +2,21 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser
 
 
+class UserManager(models.Manager):
+    pass
+
+
+
 class Users(AbstractBaseUser):
     name = models.CharField(max_length=255)
     surname = models.CharField(max_length=255)
     fathername = models.CharField(max_length=255, blank=True, null=True)
     email = models.EmailField(unique=True)
     phonenumber = models.CharField(unique=True, max_length=13)
-    registration_date = models.DateTimeField()
-    avatar = models.ImageField(upload_to='static/users/avatars', default='static/users/avatars/None.png', null=True)
+    registration_date = models.DateTimeField(auto_now=True)
+    avatar = models.ImageField(upload_to='static/users/avatars', default='static/users/avatars/None.png', null=True, blank=True)
 
-    objects = models.Manager()
+    objects = UserManager()
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['name', 'surname', 'phonenumber']
@@ -36,7 +41,7 @@ class Chats(models.Model):
     type = models.ForeignKey(Chattypes, models.DO_NOTHING, default=1)
     name = models.CharField(max_length=50)
     created_date = models.DateTimeField()
-    avatar = models.ImageField(upload_to='static/chats/avatars', default='static/chats/avatars/None.png')
+    avatar = models.ImageField(upload_to='static/chats/avatars', default='static/chats/avatars/None.png', null=True, blank=True)
 
     objects = models.Manager()
 

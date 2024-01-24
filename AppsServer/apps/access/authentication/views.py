@@ -4,18 +4,18 @@ from rest_framework.response import Response
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import AllowAny
 
-from .models import Users, Chats, Members
-from ..serializers import UsersSerializer, UsersChatsSerializer
+from ...models import Users, Chats, Members
+from ...serializers import UsersSerializer, UsersChatsSerializer
 
-class LoginAPIView(APIView):
+class SignInAPIView(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
-        login = request.query_params.get('login') or request.data.get('login')
+        email = request.query_params.get('email') or request.data.get('email')
         password = request.query_params.get('password') or request.data.get('password')
 
-        data = try_to_get_user(login, password)
+        data = try_to_get_user(email, password)
         if not data.get('signal'):
             return Response(**data.get('data'))
 
@@ -30,13 +30,12 @@ class LoginAPIView(APIView):
             status=status.HTTP_200_OK)
 
 
-def try_to_get_user(login, password):
-    user = None
+def try_to_get_user(email, password):
     try:
-        user = Users.objects.get(email=login, password=password)
+        user = Users.objects.get(email=email, password=password)
     except Exception as e:
         data = {
-            'data': {'error': 'Неверный логин или пароль'},
+            'data': {'errors': 'Неверный логин или пароль.'},
             'status': status.HTTP_404_NOT_FOUND
         }
         return {'signal': False, 'data': data}

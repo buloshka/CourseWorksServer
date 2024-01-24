@@ -46,7 +46,8 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'rest_framework_simplejwt',
     'config',
-    'apps.authentication.apps.AuthenticationConfig',
+    'apps.access.authentication.apps.AuthenticationConfig',
+    'apps.access.registration.apps.RegistrationConfig'
 ]
 
 MIDDLEWARE = [

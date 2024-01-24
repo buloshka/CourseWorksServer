@@ -23,7 +23,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('token/', jwt_views.TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', jwt_views.TokenRefreshView.as_view(), name='token_refresh'),
-    path('api-auth/', include('rest_framework.urls')),
+    # path('api-auth/', include('rest_framework.urls')),
     # path('auth/', include('djoser.urls')),
-    path('api/auth/', include('apps.authentication.urls')),
+    path('api/auth/', include('apps.access.authentication.urls')),
+    path('api/auth/', include('apps.access.registration.urls')),
 ]
