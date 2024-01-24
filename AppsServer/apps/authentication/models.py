@@ -11,6 +11,8 @@ class Users(AbstractBaseUser):
     registration_date = models.DateTimeField()
     avatar = models.ImageField(upload_to='static/users/avatars', default='static/users/avatars/None.png', null=True)
 
+    objects = models.Manager()
+
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['name', 'surname', 'phonenumber']
 
@@ -18,10 +20,12 @@ class Users(AbstractBaseUser):
         app_label = 'config'
         db_table = 'users'
 
-'''
+
 class Chattypes(models.Model):
     name = models.CharField(max_length=100)
     description = models.CharField()
+
+    objects = models.Manager()
 
     class Meta:
         app_label = 'config'
@@ -29,10 +33,12 @@ class Chattypes(models.Model):
 
 
 class Chats(models.Model):
-    type_id = models.ForeignKey(Chattypes, models.DO_NOTHING)
+    type = models.ForeignKey(Chattypes, models.DO_NOTHING, default=1)
     name = models.CharField(max_length=50)
     created_date = models.DateTimeField()
     avatar = models.ImageField(upload_to='static/chats/avatars', default='static/chats/avatars/None.png')
+
+    objects = models.Manager()
 
     class Meta:
         app_label = 'config'
@@ -40,47 +46,42 @@ class Chats(models.Model):
 
 
 class Roles(models.Model):
-    chat_id = models.ForeignKey(Chats, models.DO_NOTHING)
+    chat = models.ForeignKey(Chats, models.DO_NOTHING, null=True)
     name = models.CharField(max_length=50)
     owner = models.BooleanField()
     admin = models.BooleanField()
 
+    objects = models.Manager()
+
     class Meta:
         app_label = 'config'
         db_table = 'roles'
-        unique_together = (('id', 'chat_id'),)
+        unique_together = (('id', 'chat'),)
 
 
 class Members(models.Model):
-    user_id = models.ForeignKey(Users, models.DO_NOTHING)
-    chat_id = models.ForeignKey(Chats, models.DO_NOTHING)
-    role_id = models.ForeignKey(Roles, models.DO_NOTHING)
+    user = models.ForeignKey(Users, models.DO_NOTHING)
+    chat = models.ForeignKey(Chats, models.DO_NOTHING)
+    role = models.ForeignKey(Roles, models.DO_NOTHING, default=1)
+
+    objects = models.Manager()
 
     class Meta:
         app_label = 'config'
         db_table = 'members'
-        unique_together = (('user_id', 'chat_id', 'role_id'),)
+        unique_together = (('user', 'chat', 'role'),)
 
-
+'''
 class Messages(models.Model):
-    member_id = models.ForeignKey(Members, models.DO_NOTHING)
+    member = models.ForeignKey(Members, models.DO_NOTHING)
     text = models.TextField()
-    created_date = models.DateTimeField()
+    created_date = models.DateTimeField(auto_now=True)
+    
+    objects = models.Manager()
 
     class Meta:
         app_label = 'config'
         db_table = 'messages'
-
-
-class Logindetails(models.Model):
-    user_id = models.ForeignKey(Users, models.DO_NOTHING)
-    login = models.CharField(unique=True, max_length=100)
-    password = models.CharField(unique=True, max_length=100)
-    log_date = models.DateTimeField()
-
-    class Meta:
-        app_label = 'config'
-        db_table = 'logindetails'
 
 
 class Subscriptions(models.Model):
@@ -90,6 +91,8 @@ class Subscriptions(models.Model):
     media = models.BooleanField()
     analytics = models.BooleanField()
     themes = models.BooleanField()
+    
+    objects = models.Manager()
 
     class Meta:
         app_label = 'config'
@@ -97,9 +100,11 @@ class Subscriptions(models.Model):
 
 
 class Purchasehistory(models.Model):
-    user_id = models.ForeignKey(Users, models.DO_NOTHING)
-    sub_id = models.ForeignKey(Subscriptions, models.DO_NOTHING)
-    purchase_date = models.DateTimeField()
+    user = models.ForeignKey(Users, models.DO_NOTHING)
+    sub = models.ForeignKey(Subscriptions, models.DO_NOTHING)
+    purchase_date = models.DateTimeField(auto_now=True)
+    
+    objects = models.Manager()
 
     class Meta:
         app_label = 'config'
@@ -108,6 +113,8 @@ class Purchasehistory(models.Model):
 
 class Events(models.Model):
     description = models.CharField()
+    
+    objects = models.Manager()
 
     class Meta:
         app_label = 'config'
@@ -115,9 +122,11 @@ class Events(models.Model):
 
 
 class Eventhistory(models.Model):
-    event_id = models.ForeignKey(Events, models.DO_NOTHING)
-    user_id = models.ForeignKey(Users, models.DO_NOTHING)
-    event_date = models.DateTimeField()
+    event = models.ForeignKey(Events, models.DO_NOTHING)
+    user = models.ForeignKey(Users, models.DO_NOTHING)
+    event_date = models.DateTimeField(auto_now=True)
+    
+    objects = models.Manager()
 
     class Meta:
         app_label = 'config'
