@@ -4,15 +4,16 @@ from rest_framework.response import Response
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import AllowAny
 
-from ...models import Users, Chats, Members
+from ...models import Users, Chats, Members, Events, Eventhistory
 from ...serializers import UsersSerializer, UsersChatsSerializer
 
-class SignInAPIView(APIView):
+
+class SignInAPI(APIView):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
     permission_classes = [AllowAny]
 
     def post(self, request, *args, **kwargs):
-        email = request.query_params.get('email') or request.data.get('email')
+        email = request.query_params.get('login') or request.data.get('login')
         password = request.query_params.get('password') or request.data.get('password')
 
         data = try_to_get_user(email, password)
@@ -24,22 +25,32 @@ class SignInAPIView(APIView):
 
         chats_data = {'chats': get_user_chats(user_data)}
 
+        event = Events.objects.get(description='Sign in')
+        Eventhistory.objects.create(
+            event=event,
+            user=user,
+        )
+
         return Response(
             {'user': user_data,
              'chats': chats_data},
             status=status.HTTP_200_OK)
 
 
-def try_to_get_user(email, password):
+def try_to_get_user(login, password):
     try:
-        user = Users.objects.get(email=email, password=password)
+        user = Users.objects.get(email=login, password=password)
+        return {'signal': True, 'data': user}
     except Exception as e:
-        data = {
-            'data': {'errors': 'Неверный логин или пароль.'},
-            'status': status.HTTP_404_NOT_FOUND
-        }
-        return {'signal': False, 'data': data}
-    return {'signal': True, 'data': user}
+        try:
+            user = Users.objects.get(phonenumber=login, password=password)
+            return {'signal': True, 'data': user}
+        except Exception as e:
+            data = {
+                'data': {'errors': 'Invalid login or password'},
+                'status': status.HTTP_404_NOT_FOUND
+            }
+            return {'signal': False, 'data': data}
 
 
 def get_user_chats(user):

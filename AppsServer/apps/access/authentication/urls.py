@@ -1,6 +1,6 @@
-from django.urls import path, include
+from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('signin/', views.SignInAPIView.as_view(), name='get_user'),
+    path('signin/', views.SignInAPI.as_view(), name='get_user_data'),
 ]

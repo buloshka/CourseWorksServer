@@ -43,11 +43,16 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'rest_framework.authtoken',
     'rest_framework_simplejwt',
+    'channels',
     'config',
     'apps.access.authentication.apps.AuthenticationConfig',
-    'apps.access.registration.apps.RegistrationConfig'
+    'apps.access.registration.apps.RegistrationConfig',
+    'apps.access.password_recovery.apps.PasswordRecoveryConfig',
+    'apps.communication.chats.apps.ChatsConfig',
+    'apps.communication.chats_messages.apps.ChatsMessagesConfig',
+    'apps.communication.group_chats_messages.apps.GroupChatsMessagesConfig',
+    'apps.settings.settings.apps.SettingsConfig',
 ]
 
 MIDDLEWARE = [
@@ -119,7 +124,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Europe/Moscow'
 
 USE_I18N = True
 
@@ -151,3 +156,22 @@ SIMPLE_JWT = {
 }
 
 UTH_USER_MODEL = 'apps.authentication.Users'
+
+# EMAIL
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+EMAIL_HOST = env("EMAIL_HOST")
+EMAIL_PORT = env("EMAIL_PORT")
+EMAIL_HOST_USER = env("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
+EMAIL_USE_TLS = False
+EMAIL_USE_SSL = True
+
+SERVER_EMAIL = EMAIL_HOST_USER
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+# SMS
+SMS_BACKEND = 'sms.backends.twilio.SmsBackend'
+TWILIO_ACCOUNT_SID = env('TWILIO_ACCAUNT_SID')
+TWILIO_AUTH_TOKEN = env('TWILIO_AUTH_TOKEN')
+TWILIO_PHONE_NUMBER= env('TWILIO_PHONENUMBER')

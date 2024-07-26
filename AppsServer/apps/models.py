@@ -1,20 +1,26 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser
 
+from django.utils import timezone
+from datetime import timedelta
+
 
 class UserManager(models.Manager):
     pass
 
 
-
 class Users(AbstractBaseUser):
-    name = models.CharField(max_length=255)
-    surname = models.CharField(max_length=255)
-    fathername = models.CharField(max_length=255, blank=True, null=True)
-    email = models.EmailField(unique=True)
-    phonenumber = models.CharField(unique=True, max_length=13)
+    name = models.CharField(max_length=50)
+    surname = models.CharField(max_length=50)
+    fathername = models.CharField(max_length=50, blank=True, null=True)
+    email = models.EmailField(unique=True, max_length=345)
+    phonenumber = models.CharField(unique=True, max_length=15)
     registration_date = models.DateTimeField(auto_now=True)
-    avatar = models.ImageField(upload_to='static/users/avatars', default='static/users/avatars/None.png', null=True, blank=True)
+    avatar = models.ImageField(upload_to='static/users/avatars',
+                               default='static/users/avatars/None.png',
+                               null=True)
+    code = models.CharField(unique=True, max_length=6, null=True)
+    expiry_date_code = models.DateTimeField(default=timezone.now() + timedelta(minutes=15))
 
     objects = UserManager()
 
@@ -28,7 +34,7 @@ class Users(AbstractBaseUser):
 
 class Chattypes(models.Model):
     name = models.CharField(max_length=100)
-    description = models.CharField()
+    description = models.CharField(max_length=100)
 
     objects = models.Manager()
 
@@ -40,7 +46,7 @@ class Chattypes(models.Model):
 class Chats(models.Model):
     type = models.ForeignKey(Chattypes, models.DO_NOTHING, default=1)
     name = models.CharField(max_length=50)
-    created_date = models.DateTimeField()
+    created_date = models.DateTimeField(auto_now=True)
     avatar = models.ImageField(upload_to='static/chats/avatars', default='static/chats/avatars/None.png', null=True, blank=True)
 
     objects = models.Manager()
@@ -76,10 +82,10 @@ class Members(models.Model):
         db_table = 'members'
         unique_together = (('user', 'chat', 'role'),)
 
-'''
+
 class Messages(models.Model):
     member = models.ForeignKey(Members, models.DO_NOTHING)
-    text = models.TextField()
+    text = models.TextField(max_length=10000)
     created_date = models.DateTimeField(auto_now=True)
     
     objects = models.Manager()
@@ -107,6 +113,7 @@ class Subscriptions(models.Model):
 class Purchasehistory(models.Model):
     user = models.ForeignKey(Users, models.DO_NOTHING)
     sub = models.ForeignKey(Subscriptions, models.DO_NOTHING)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
     purchase_date = models.DateTimeField(auto_now=True)
     
     objects = models.Manager()
@@ -117,7 +124,7 @@ class Purchasehistory(models.Model):
 
 
 class Events(models.Model):
-    description = models.CharField()
+    description = models.CharField(max_length=100)
     
     objects = models.Manager()
 
@@ -136,4 +143,3 @@ class Eventhistory(models.Model):
     class Meta:
         app_label = 'config'
         db_table = 'eventhistory'
-'''
